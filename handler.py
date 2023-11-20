@@ -1,7 +1,6 @@
 import os
 from io import BytesIO
 import pandas as pd
-import numpy as np
 import boto3
 import joblib
 from aws_lambda_powertools.utilities.parser import event_parser, BaseModel

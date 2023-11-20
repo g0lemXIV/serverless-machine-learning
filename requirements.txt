@@ -1,5 +1,5 @@
-requests~=2.26.0
-aws-lambda-powertools~=1.18.1
+requests
+aws-lambda-powertools
 pycaret
 pydantic[email]
 boto3
