@@ -1,6 +1,8 @@
 import argparse
+import pandas as pd
 import numpy as np
 import os
+import warnings
 import shutil
 from pycaret.regression import *
 import datetime
@@ -28,13 +30,11 @@ def _setup_train(df: pd.DataFrame) -> tuple:
     exp_1 = setup(data=df.drop(columns=columns_drop),
                   target='price', session_id=123,
                   normalize=True, transformation=True, transform_target=True,
-                  combine_rare_levels=True, rare_level_threshold=0.05,
+                  rare_to_value=0.05,
                   remove_multicollinearity=True, multicollinearity_threshold=0.8,
                   categorical_features=['room_type', 'neighbourhood'],
-                  polynomial_features=True, trigonometry_features=True,
-                  feature_interaction=True, feature_ratio=True,
-                  feature_selection=True, feature_selection_method='boruta',
-                  silent=True
+                  polynomial_features=True,
+                  feature_selection=True
                   )
     return exp_1
 
@@ -53,7 +53,7 @@ def create_experiment(data_path:str, model_path: str) -> None:
     # compare models and select best to optimize
     best = create_model('lightgbm', fold=10)
     print('Tunning best model')
-    tuned_best = tune_model(best, optimize='R2', n_iter=150)
+    tuned_best = tune_model(best)
     print('Generate analysis')
     _analyze_model(tuned_best)
     print("Save model")
@@ -68,7 +68,9 @@ def create_experiment(data_path:str, model_path: str) -> None:
                      platform='aws',
                      authentication={'bucket': 'pycaret-serverless'})
     except Exception as e:
-        warnings.warn('Cannot deploy to S3, do it manually')
+        error = 'Cannot deploy to S3, do it manually'
+        print(error)
+        warnings.warn(error)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
