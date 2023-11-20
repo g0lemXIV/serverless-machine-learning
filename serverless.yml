@@ -1,10 +1,12 @@
+org: wbuck
+app: pc-serverless
 service: pc-serverless
-frameworkVersion: '2'
+frameworkVersion: '3'
+configValidationMode: error
 
 provider:
   name: aws
-  runtime: python3.7
-  lambdaHashingVersion: 20201221
+  runtime: python3.8
   versionFunctions: false
   stage: ${opt:stage, 'test'}
   region: eu-central-1
@@ -29,7 +31,7 @@ provider:
           Resource: "arn:aws:s3:::*"
 
 package:
-  exclude:
+  patterns:
     - .serverless/**
     - .aws-sam/**
     - data/**
@@ -51,6 +53,6 @@ functions:
       - httpApi:
           method: POST
           path: ${self:provider.environment.endpoint}
-    environemnt:
+    environment:
       model_name: ${self:provider.environment.model_name}
       bucket: ${self:provider.environment.bucket}
